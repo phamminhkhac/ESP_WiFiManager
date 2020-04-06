@@ -394,8 +394,8 @@ boolean ESP_WiFiManager::autoConnect(char const *apName, char const *apPassword)
 
     if (WiFi.status() == WL_CONNECTED)
     {
-      float waited = (millis() - startedAt);
 #if DEBUG_WIFIMGR
+      float waited = (millis() - startedAt);
       DEBUG_WM(F("After waiting "));
       DEBUG_WM(waited / 1000);
       DEBUG_WM(F(" secs, local ip: "));
@@ -536,11 +536,12 @@ boolean ESP_WiFiManager::startConfigPortal(char const *apName, char const *apPas
     setHostname();
 
     WiFi.begin();
-    int connRes = waitForConnectResult();
-
 #if DEBUG_WIFIMGR
+    int connRes = waitForConnectResult();
     DEBUG_WM("Timed out connection result: ");
     DEBUG_WM(getStatus(connRes));
+#else
+    waitForConnectResult();
 #endif
   }
 
@@ -1661,7 +1662,6 @@ int ESP_WiFiManager::scanWifiNetworks(int **indicesptr)
 }
 
 template <typename Generic>
-#if DEBUG_WIFIMGR
 void ESP_WiFiManager::DEBUG_WM(Generic text)
 {
   if (_debug)
@@ -1670,7 +1670,6 @@ void ESP_WiFiManager::DEBUG_WM(Generic text)
     Serial.println(text);
   }
 }
-#endif
 
 int ESP_WiFiManager::getRSSIasQuality(int RSSI)
 {

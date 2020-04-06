@@ -262,8 +262,7 @@ public:
     {
 #ifdef ESP8266
       WiFi.hostname(RFC952_hostname);
-#else //ESP32 \
-      // See https://github.com/espressif/arduino-esp32/issues/2537
+#else //ESP32 // See https://github.com/espressif/arduino-esp32/issues/2537
       WiFi.config(INADDR_NONE, INADDR_NONE, INADDR_NONE);
       WiFi.setHostname(RFC952_hostname);
 #endif
@@ -364,9 +363,7 @@ private:
 #endif
 
   template <typename Generic>
-#if DEBUG_WIFIMGR
   void DEBUG_WM(Generic text);
-#endif
 
   template <class T>
   auto optionalIPFromString(T *obj, const char *s) -> decltype(obj->fromString(s))
