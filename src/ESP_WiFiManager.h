@@ -31,11 +31,11 @@
 #ifndef ESP_WiFiManager_h
 #define ESP_WiFiManager_h
 
- //KH, for ESP32
+//KH, for ESP32
 #ifdef ESP8266
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
-#else		//ESP32
+#else //ESP32
 #include <WiFi.h>
 #include <WebServer.h>
 #endif
@@ -52,14 +52,14 @@ extern "C"
 {
 #include "user_interface.h"
 }
-#define ESP_getChipId()   (ESP.getChipId())
-#else		//ESP32
+#define ESP_getChipId() (ESP.getChipId())
+#else //ESP32
 #include <esp_wifi.h>
-#define ESP_getChipId()   ((uint32_t)ESP.getEfuseMac())
+#define ESP_getChipId() ((uint32_t)ESP.getEfuseMac())
 #endif
 
 // From v1.0.6 to enable NTP config
-#define USE_ESP_WIFIMANAGER_NTP     true
+#define USE_ESP_WIFIMANAGER_NTP false
 
 #define WFM_LABEL_BEFORE 1
 #define WFM_LABEL_AFTER 2
@@ -100,11 +100,11 @@ const char HTTP_END[] PROGMEM = "</div></body></html>";
 
 //KH, added 2019/12/15 from Tzapu Development
 // http
-const char HTTP_HEAD_CL[]         PROGMEM = "Content-Length";
-const char HTTP_HEAD_CT[]         PROGMEM = "text/html";
-const char HTTP_HEAD_CT2[]        PROGMEM = "text/plain";
-const char HTTP_HEAD_CORS[]       PROGMEM = "Access-Control-Allow-Origin";
-const char HTTP_HEAD_CORS_ALLOW_ALL[]  PROGMEM = "*";
+const char HTTP_HEAD_CL[] PROGMEM = "Content-Length";
+const char HTTP_HEAD_CT[] PROGMEM = "text/html";
+const char HTTP_HEAD_CT2[] PROGMEM = "text/plain";
+const char HTTP_HEAD_CORS[] PROGMEM = "Access-Control-Allow-Origin";
+const char HTTP_HEAD_CORS_ALLOW_ALL[] PROGMEM = "*";
 
 #if USE_AVAILABLE_PAGES
 const char HTTP_AVAILABLE_PAGES[] PROGMEM = "<h3>Available Pages</h3><table class=\"table\"><thead><tr><th>Page</th><th>Function</th></tr></thead><tbody><tr><td><a href=\"/\">/</a></td><td>Menu page.</td></tr><tr><td><a href=\"/wifi\">/wifi</a></td><td>Show WiFi scan results and enter WiFi configuration.</td></tr><tr><td><a href=\"/wifisave\">/wifisave</a></td><td>Save WiFi configuration information and configure device. Needs variables supplied.</td></tr><tr><td><a href=\"/close\">/close</a></td><td>Close the configuration server and configuration WiFi network.</td></tr><tr><td><a href=\"/i\">/i</a></td><td>This page.</td></tr><tr><td><a href=\"/r\">/r</a></td><td>Delete WiFi configuration and reboot. ESP device will not reconnect to a network until new WiFi configuration data is entered.</td></tr><tr><td><a href=\"/state\">/state</a></td><td>Current device state in JSON format. Interface for programmatic WiFi configuration.</td></tr><tr><td><a href=\"/scan\">/scan</a></td><td>Run a WiFi scan and return results in JSON format. Interface for programmatic WiFi configuration.</td></tr></table>";
@@ -117,9 +117,10 @@ const char HTTP_AVAILABLE_PAGES[] PROGMEM = "";
 
 // Thanks to @Amorphous for the feature and code, from v1.0.5
 // (https://community.blynk.cc/t/esp-wifimanager-for-esp32-and-esp8266/42257/13)
-#define USE_CONFIGURABLE_DNS      true
+#define USE_CONFIGURABLE_DNS true
 
-class ESP_WMParameter {
+class ESP_WMParameter
+{
 public:
   ESP_WMParameter(const char *custom);
   ESP_WMParameter(const char *id, const char *placeholder, const char *defaultValue, int length);
@@ -131,15 +132,16 @@ public:
   const char *getID();
   const char *getValue();
   const char *getPlaceholder();
-  int         getValueLength();
-  int         getLabelPlacement();
+  int getValueLength();
+  int getLabelPlacement();
   const char *getCustomHTML();
+
 private:
   const char *_id;
   const char *_placeholder;
-  char       *_value;
-  int         _length;
-  int         _labelPlacement;
+  char *_value;
+  int _length;
+  int _labelPlacement;
   const char *_customHTML;
 
   void init(const char *id, const char *placeholder, const char *defaultValue, int length, const char *custom, int labelPlacement);
@@ -147,91 +149,89 @@ private:
   friend class ESP_WiFiManager;
 };
 
-#define USE_DYNAMIC_PARAMS				true
-#define DEFAULT_PORTAL_TIMEOUT  	60000L
+#define USE_DYNAMIC_PARAMS true
+#define DEFAULT_PORTAL_TIMEOUT 60000L
 
 class ESP_WiFiManager
 {
 public:
-
   ESP_WiFiManager(const char *iHostname = "");
 
   ~ESP_WiFiManager();
 
-  boolean       autoConnect(); //Deprecated. Do not use.
-  boolean       autoConnect(char const *apName, char const *apPassword = NULL); //Deprecated. Do not use.
+  boolean autoConnect();                                                  //Deprecated. Do not use.
+  boolean autoConnect(char const *apName, char const *apPassword = NULL); //Deprecated. Do not use.
 
   //if you want to start the config portal
-  boolean       startConfigPortal();
-  boolean       startConfigPortal(char const *apName, char const *apPassword = NULL);
+  boolean startConfigPortal();
+  boolean startConfigPortal(char const *apName, char const *apPassword = NULL);
 
   // get the AP name of the config portal, so it can be used in the callback
-  String        getConfigPortalSSID();
+  String getConfigPortalSSID();
   // get the AP password of the config portal, so it can be used in the callback
-  String        getConfigPortalPW();
+  String getConfigPortalPW();
 
-  void          resetSettings();
+  void resetSettings();
 
   //sets timeout before webserver loop ends and exits even if there has been no setup.
   //usefully for devices that failed to connect at some point and got stuck in a webserver loop
   //in seconds setConfigPortalTimeout is a new name for setTimeout
-  void          setConfigPortalTimeout(unsigned long seconds);
-  void          setTimeout(unsigned long seconds);
+  void setConfigPortalTimeout(unsigned long seconds);
+  void setTimeout(unsigned long seconds);
 
   //sets timeout for which to attempt connecting, usefull if you get a lot of failed connects
-  void          setConnectTimeout(unsigned long seconds);
+  void setConnectTimeout(unsigned long seconds);
 
-
-  void          setDebugOutput(boolean debug);
+  void setDebugOutput(boolean debug);
   //defaults to not showing anything under 8% signal quality if called
-  void          setMinimumSignalQuality(int quality = 8);
+  void setMinimumSignalQuality(int quality = 8);
   //sets a custom ip /gateway /subnet configuration
-  void          setAPStaticIPConfig(IPAddress ip, IPAddress gw, IPAddress sn);
+  void setAPStaticIPConfig(IPAddress ip, IPAddress gw, IPAddress sn);
   //sets config for a static IP
-  void          setSTAStaticIPConfig(IPAddress ip, IPAddress gw, IPAddress sn);
+  void setSTAStaticIPConfig(IPAddress ip, IPAddress gw, IPAddress sn);
 
-#if USE_CONFIGURABLE_DNS    
-  void          setSTAStaticIPConfig(IPAddress ip, IPAddress gw, IPAddress sn,
-    IPAddress dns_address_1, IPAddress dns_address_2);
-#endif   
+#if USE_CONFIGURABLE_DNS
+  void setSTAStaticIPConfig(IPAddress ip, IPAddress gw, IPAddress sn,
+                            IPAddress dns_address_1, IPAddress dns_address_2);
+#endif
 
   //called when AP mode and config portal is started
-  void          setAPCallback(void(*func)(ESP_WiFiManager*));
+  void setAPCallback(void (*func)(ESP_WiFiManager *));
   //called when settings have been changed and connection was successful
-  void          setSaveConfigCallback(void(*func)(void));
+  void setSaveConfigCallback(void (*func)(void));
 
 #if USE_DYNAMIC_PARAMS
   //adds a custom parameter
-  bool 				addParameter(ESP_WMParameter *p);
+  bool addParameter(ESP_WMParameter *p);
 #else
   //adds a custom parameter
-  void 				addParameter(ESP_WMParameter *p);
+  void addParameter(ESP_WMParameter *p);
 #endif
 
   //if this is set, it will exit after config, even if connection is unsucessful.
-  void          setBreakAfterConfig(boolean shouldBreak);
+  void setBreakAfterConfig(boolean shouldBreak);
   //if this is set, try WPS setup when starting (this will delay config portal for up to 2 mins)
   //TODO
   //if this is set, customise style
-  void          setCustomHeadElement(const char* element);
+  void setCustomHeadElement(const char *element);
   //if this is true, remove duplicated Access Points - defaut true
-  void          setRemoveDuplicateAPs(boolean removeDuplicates);
+  void setRemoveDuplicateAPs(boolean removeDuplicates);
   //Scan for WiFiNetworks in range and sort by signal strength
   //space for indices array allocated on the heap and should be freed when no longer required
-  int           scanWifiNetworks(int **indicesptr);
+  int scanWifiNetworks(int **indicesptr);
 
   // return SSID of router in STA mode got from config portal. NULL if no user's input //KH
-  String				getSSID(void) { return _ssid; }
+  String getSSID(void) { return _ssid; }
 
   // return password of router in STA mode got from config portal. NULL if no user's input //KH
-  String				getPW(void) { return _pass; }
+  String getPW(void) { return _pass; }
 
   //returns the list of Parameters
-  ESP_WMParameter** getParameters();
+  ESP_WMParameter **getParameters();
   // returns the Parameters Count
-  int           getParametersCount();
+  int getParametersCount();
 
-  const char*   getStatus(int status);
+  const char *getStatus(int status);
 
 #ifdef ESP32
   String getStoredWiFiSSID();
@@ -262,7 +262,7 @@ public:
     {
 #ifdef ESP8266
       WiFi.hostname(RFC952_hostname);
-#else		//ESP32
+#else //ESP32 \
       // See https://github.com/espressif/arduino-esp32/issues/2537
       WiFi.config(INADDR_NONE, INADDR_NONE, INADDR_NONE);
       WiFi.setHostname(RFC952_hostname);
@@ -271,31 +271,31 @@ public:
   }
 
 private:
-  std::unique_ptr<DNSServer>        dnsServer;
+  std::unique_ptr<DNSServer> dnsServer;
 
-  //KH, for ESP32    
+  //KH, for ESP32
 #ifdef ESP8266
   std::unique_ptr<ESP8266WebServer> server;
-#else		//ESP32
-  std::unique_ptr<WebServer>        server;
-#endif    
+#else //ESP32
+  std::unique_ptr<WebServer> server;
+#endif
 
-#define RFC952_HOSTNAME_MAXLEN      24
+#define RFC952_HOSTNAME_MAXLEN 24
   char RFC952_hostname[RFC952_HOSTNAME_MAXLEN + 1];
 
-  char* getRFC952_hostname(const char* iHostname);
+  char *getRFC952_hostname(const char *iHostname);
 
-  void          setupConfigPortal();
-  void          startWPS();
+  void setupConfigPortal();
+  void startWPS();
   //const char*   getStatus(int status);
 
-  const char*   _apName = "no-net";
-  const char*   _apPassword = NULL;
-  String        _ssid = "";
-  String        _pass = "";
+  const char *_apName = "no-net";
+  const char *_apPassword = NULL;
+  String _ssid = "";
+  String _pass = "";
 
   // From v1.0.6 with timezone info
-  String        _timezoneName = "";
+  String _timezoneName = "";
 
   unsigned long _configPortalTimeout = 0;
 
@@ -305,72 +305,74 @@ private:
   int numberOfNetworks;
   int *networkIndices;
 
-  IPAddress     _ap_static_ip;
-  IPAddress     _ap_static_gw;
-  IPAddress     _ap_static_sn;
-  IPAddress     _sta_static_ip;
-  IPAddress     _sta_static_gw;
-  IPAddress     _sta_static_sn;
+  IPAddress _ap_static_ip;
+  IPAddress _ap_static_gw;
+  IPAddress _ap_static_sn;
+  IPAddress _sta_static_ip;
+  IPAddress _sta_static_gw;
+  IPAddress _sta_static_sn;
 
 #if USE_CONFIGURABLE_DNS
-  IPAddress     _sta_static_dns1;
-  IPAddress     _sta_static_dns2;
+  IPAddress _sta_static_dns1;
+  IPAddress _sta_static_dns2;
 #endif
 
-  int           _paramsCount = 0;
-  int           _minimumQuality = -1;
-  boolean       _removeDuplicateAPs = true;
-  boolean       _shouldBreakAfterConfig = false;
-  boolean       _tryWPS = false;
+  int _paramsCount = 0;
+  int _minimumQuality = -1;
+  boolean _removeDuplicateAPs = true;
+  boolean _shouldBreakAfterConfig = false;
+  boolean _tryWPS = false;
 
-  const char*   _customHeadElement = "";
+  const char *_customHeadElement = "";
 
-  int           status = WL_IDLE_STATUS;
-  int           connectWifi(String ssid, String pass);
-  uint8_t       waitForConnectResult();
+  int status = WL_IDLE_STATUS;
+  int connectWifi(String ssid, String pass);
+  uint8_t waitForConnectResult();
 
-  void          handleRoot();
-  void          handleWifi();
-  void          handleWifiSave();
-  void          handleServerClose();
-  void          handleInfo();
-  void          handleState();
-  void          handleScan();
-  void          handleReset();
-  void          handleNotFound();
-  boolean       captivePortal();
-  void          reportStatus(String &page);
+  void handleRoot();
+  void handleWifi();
+  void handleWifiSave();
+  void handleServerClose();
+  void handleInfo();
+  void handleState();
+  void handleScan();
+  void handleReset();
+  void handleNotFound();
+  boolean captivePortal();
+  void reportStatus(String &page);
 
   // DNS server
-  const byte    DNS_PORT = 53;
+  const byte DNS_PORT = 53;
 
   //helpers
-  int           getRSSIasQuality(int RSSI);
-  boolean       isIp(String str);
-  String        toStringIp(IPAddress ip);
+  int getRSSIasQuality(int RSSI);
+  boolean isIp(String str);
+  String toStringIp(IPAddress ip);
 
-  boolean       connect;
-  boolean       stopConfigPortal = false;
-  boolean       _debug = false;     //true;
+  boolean connect;
+  boolean stopConfigPortal = false;
+  boolean _debug = false; //true;
 
-  void(*_apcallback)(ESP_WiFiManager*) = NULL;
-  void(*_savecallback)(void) = NULL;
+  void (*_apcallback)(ESP_WiFiManager *) = NULL;
+  void (*_savecallback)(void) = NULL;
 
 #if USE_DYNAMIC_PARAMS
-  int                    _max_params;
-  ESP_WMParameter** _params;
+  int _max_params;
+  ESP_WMParameter **_params;
 #else
-  ESP_WMParameter* _params[WIFI_MANAGER_MAX_PARAMS];
+  ESP_WMParameter *_params[WIFI_MANAGER_MAX_PARAMS];
 #endif
 
   template <typename Generic>
-  void          DEBUG_WM(Generic text);
+  void DEBUG_WM(Generic text);
 
   template <class T>
-  auto optionalIPFromString(T *obj, const char *s) -> decltype(obj->fromString(s)) {
-    return  obj->fromString(s);
+  auto optionalIPFromString(T *obj, const char *s) -> decltype(obj->fromString(s))
+  {
+    return obj->fromString(s);
   }
-  auto optionalIPFromString(...) -> bool {
+  auto optionalIPFromString(...) -> bool
+  {
     DEBUG_WM("NO fromString METHOD ON IPAddress, you need ESP8266 core 2.1.0 or newer for Custom IP configuration to work.");
     return false;
   }

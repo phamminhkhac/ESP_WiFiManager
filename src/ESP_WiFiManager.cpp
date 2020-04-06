@@ -30,7 +30,7 @@
 
 #include "ESP_WiFiManager.h"
 
-#define DEBUG_WIFIMGR			false
+#define DEBUG_WIFIMGR false
 
 ESP_WMParameter::ESP_WMParameter(const char *custom)
 {
@@ -87,16 +87,16 @@ ESP_WMParameter::~ESP_WMParameter()
   }
 }
 
-const char* ESP_WMParameter::getValue()
+const char *ESP_WMParameter::getValue()
 {
   return _value;
 }
 
-const char* ESP_WMParameter::getID()
+const char *ESP_WMParameter::getID()
 {
   return _id;
 }
-const char* ESP_WMParameter::getPlaceholder()
+const char *ESP_WMParameter::getPlaceholder()
 {
   return _placeholder;
 }
@@ -110,7 +110,7 @@ int ESP_WMParameter::getLabelPlacement()
 {
   return _labelPlacement;
 }
-const char* ESP_WMParameter::getCustomHTML()
+const char *ESP_WMParameter::getCustomHTML()
 {
   return _customHTML;
 }
@@ -119,7 +119,8 @@ const char* ESP_WMParameter::getCustomHTML()
  * [getParameters description]
  * @access public
  */
-ESP_WMParameter** ESP_WiFiManager::getParameters() {
+ESP_WMParameter **ESP_WiFiManager::getParameters()
+{
   return _params;
 }
 
@@ -127,11 +128,12 @@ ESP_WMParameter** ESP_WiFiManager::getParameters() {
  * [getParametersCount description]
  * @access public
  */
-int ESP_WiFiManager::getParametersCount() {
+int ESP_WiFiManager::getParametersCount()
+{
   return _paramsCount;
 }
 
-char* ESP_WiFiManager::getRFC952_hostname(const char* iHostname)
+char *ESP_WiFiManager::getRFC952_hostname(const char *iHostname)
 {
   memset(RFC952_hostname, 0, sizeof(RFC952_hostname));
 
@@ -158,7 +160,7 @@ ESP_WiFiManager::ESP_WiFiManager(const char *iHostname)
 {
 #if USE_DYNAMIC_PARAMS
   _max_params = WIFI_MANAGER_MAX_PARAMS;
-  _params = (ESP_WMParameter**)malloc(_max_params * sizeof(ESP_WMParameter*));
+  _params = (ESP_WMParameter **)malloc(_max_params * sizeof(ESP_WMParameter *));
 #endif
 
   //WiFi not yet started here, must call WiFi.mode(WIFI_STA) and modify function WiFiGenericClass::mode(wifi_mode_t m) !!!
@@ -169,13 +171,12 @@ ESP_WiFiManager::ESP_WiFiManager(const char *iHostname)
   {
 #ifdef ESP8266
     String _hostname = "ESP8266-" + String(ESP.getChipId(), HEX);
-#else		//ESP32
+#else //ESP32
     String _hostname = "ESP32-" + String((uint32_t)ESP.getEfuseMac(), HEX);
 #endif
     _hostname.toUpperCase();
 
     getRFC952_hostname(_hostname.c_str());
-
   }
   else
   {
@@ -196,7 +197,7 @@ ESP_WiFiManager::~ESP_WiFiManager()
 #if USE_DYNAMIC_PARAMS
   if (_params != NULL)
   {
-#if DEBUG_WIFIMGR  
+#if DEBUG_WIFIMGR
     DEBUG_WM(F("freeing allocated params!"));
 #endif
 
@@ -228,7 +229,7 @@ void ESP_WiFiManager::addParameter(ESP_WMParameter *p)
     _max_params += WIFI_MANAGER_MAX_PARAMS;
     DEBUG_WM(F("Increasing _max_params to:"));
     DEBUG_WM(_max_params);
-    ESP_WMParameter** new_params = (ESP_WMParameter**)realloc(_params, _max_params * sizeof(ESP_WMParameter*));
+    ESP_WMParameter **new_params = (ESP_WMParameter **)realloc(_params, _max_params * sizeof(ESP_WMParameter *));
 
     if (new_params != NULL)
     {
@@ -279,9 +280,9 @@ void ESP_WiFiManager::setupConfigPortal()
 
 #ifdef ESP8266
   server.reset(new ESP8266WebServer(80));
-#else		//ESP32
+#else //ESP32
   server.reset(new WebServer(80));
-#endif  
+#endif
 
   /* Setup the DNS server redirecting all the domains to the apIP */
   if (dnsServer)
@@ -316,7 +317,7 @@ void ESP_WiFiManager::setupConfigPortal()
 
   if (_apPassword != NULL)
   {
-    WiFi.softAP(_apName, _apPassword);//password option
+    WiFi.softAP(_apName, _apPassword); //password option
   }
   else
   {
@@ -339,14 +340,13 @@ void ESP_WiFiManager::setupConfigPortal()
   server->onNotFound(std::bind(&ESP_WiFiManager::handleNotFound, this));
   server->begin(); // Web server start
   DEBUG_WM(F("HTTP server started"));
-
 }
 
 boolean ESP_WiFiManager::autoConnect()
 {
 #ifdef ESP8266
   String ssid = "ESP_" + String(ESP.getChipId());
-#else		//ESP32
+#else //ESP32
   String ssid = "ESP_" + String((uint32_t)ESP.getEfuseMac());
 #endif
 
@@ -388,11 +388,11 @@ boolean ESP_WiFiManager::autoConnect(char const *apName, char const *apPassword)
   return startConfigPortal(apName, apPassword);
 }
 
-boolean  ESP_WiFiManager::startConfigPortal()
+boolean ESP_WiFiManager::startConfigPortal()
 {
 #ifdef ESP8266
   String ssid = "ESP_" + String(ESP.getChipId());
-#else		//ESP32
+#else //ESP32
   String ssid = "ESP_" + String((uint32_t)ESP.getEfuseMac());
 #endif
   ssid.toUpperCase();
@@ -400,18 +400,18 @@ boolean  ESP_WiFiManager::startConfigPortal()
   return startConfigPortal(ssid.c_str(), NULL);
 }
 
-boolean  ESP_WiFiManager::startConfigPortal(char const *apName, char const *apPassword)
+boolean ESP_WiFiManager::startConfigPortal(char const *apName, char const *apPassword)
 {
   //setup AP
   int connRes = WiFi.waitForConnectResult();
 
-#if DEBUG_WIFIMGR   
+#if DEBUG_WIFIMGR
   DEBUG_WM("WiFi.waitForConnectResult Done");
 #endif
 
   if (connRes == WL_CONNECTED)
   {
-#if DEBUG_WIFIMGR    
+#if DEBUG_WIFIMGR
     DEBUG_WM("SET AP_STA");
 #endif
     WiFi.mode(WIFI_AP_STA); //Dual mode works fine if it is connected to WiFi
@@ -443,7 +443,7 @@ boolean  ESP_WiFiManager::startConfigPortal(char const *apName, char const *apPa
 
   bool TimedOut = true;
 
-#if DEBUG_WIFIMGR   
+#if DEBUG_WIFIMGR
   DEBUG_WM("ESP_WiFiManager::startConfigPortal : Enter loop");
 #endif
 
@@ -495,7 +495,7 @@ boolean  ESP_WiFiManager::startConfigPortal(char const *apName, char const *apPa
 
     if (stopConfigPortal)
     {
-      DEBUG_WM("Stop ConfigPortal");  	//KH
+      DEBUG_WM("Stop ConfigPortal"); //KH
       stopConfigPortal = false;
       break;
     }
@@ -510,7 +510,7 @@ boolean  ESP_WiFiManager::startConfigPortal(char const *apName, char const *apPa
     WiFi.begin();
     int connRes = waitForConnectResult();
 
-#if DEBUG_WIFIMGR  
+#if DEBUG_WIFIMGR
     DEBUG_WM("Timed out connection result: ");
     DEBUG_WM(getStatus(connRes));
 #endif
@@ -521,7 +521,7 @@ boolean  ESP_WiFiManager::startConfigPortal(char const *apName, char const *apPa
   dnsServer->stop();
   dnsServer.reset();
 
-  return  WiFi.status() == WL_CONNECTED;
+  return WiFi.status() == WL_CONNECTED;
 }
 
 int ESP_WiFiManager::connectWifi(String ssid, String pass)
@@ -537,15 +537,18 @@ int ESP_WiFiManager::connectWifi(String ssid, String pass)
     {
       DEBUG_WM(F("Custom STA IP/GW/Subnet"));
       //***** Added section for DNS config option *****
-      if (_sta_static_dns1 && _sta_static_dns2) {
+      if (_sta_static_dns1 && _sta_static_dns2)
+      {
         DEBUG_WM(F("dns1 and dns2 set"));
         WiFi.config(_sta_static_ip, _sta_static_gw, _sta_static_sn, _sta_static_dns1, _sta_static_dns2);
       }
-      else if (_sta_static_dns1) {
+      else if (_sta_static_dns1)
+      {
         DEBUG_WM(F("only dns1 set"));
         WiFi.config(_sta_static_ip, _sta_static_gw, _sta_static_sn, _sta_static_dns1);
       }
-      else {
+      else
+      {
         DEBUG_WM(F("No DNS server set"));
         WiFi.config(_sta_static_ip, _sta_static_gw, _sta_static_sn);
       }
@@ -553,7 +556,7 @@ int ESP_WiFiManager::connectWifi(String ssid, String pass)
 
       DEBUG_WM(WiFi.localIP());
     }
-#else		
+#else
     // check if we've got static_ip settings, if we do, use those.
     if (_sta_static_ip)
     {
@@ -574,7 +577,7 @@ int ESP_WiFiManager::connectWifi(String ssid, String pass)
 
     setHostname();
 
-    WiFi.begin(ssid.c_str(), pass.c_str());   // Start Wifi with new values.
+    WiFi.begin(ssid.c_str(), pass.c_str()); // Start Wifi with new values.
   }
   else if (WiFi_SSID() == "")
   {
@@ -600,14 +603,14 @@ uint8_t ESP_WiFiManager::waitForConnectResult()
 {
   if (_connectTimeout == 0)
   {
-#if DEBUG_WIFIMGR  
+#if DEBUG_WIFIMGR
     unsigned long startedAt = millis();
     DEBUG_WM(F("After waiting..."));
 #endif
 
     int connRes = WiFi.waitForConnectResult();
 
-#if DEBUG_WIFIMGR  
+#if DEBUG_WIFIMGR
     float waited = (millis() - startedAt);
     DEBUG_WM(waited / 1000);
     DEBUG_WM(F("seconds"));
@@ -647,15 +650,15 @@ void ESP_WiFiManager::startWPS()
   DEBUG_WM("START WPS");
   WiFi.beginWPSConfig();
   DEBUG_WM("END WPS");
-#else		//ESP32
+#else //ESP32
   // TODO
   DEBUG_WM("ESP32 WPS TODO");
-#endif  
+#endif
 }
 
 //Convenient for debugging but wasteful of program space.
 //Remove if short of space
-const char* ESP_WiFiManager::getStatus(int status)
+const char *ESP_WiFiManager::getStatus(int status)
 {
   switch (status)
   {
@@ -733,7 +736,7 @@ void ESP_WiFiManager::setSTAStaticIPConfig(IPAddress ip, IPAddress gw, IPAddress
   _sta_static_gw = gw;
   _sta_static_sn = sn;
   _sta_static_dns1 = dns_address_1; //***** Added argument *****
-  _sta_static_dns2 = dns_address_2; //***** Added argument *****  
+  _sta_static_dns2 = dns_address_2; //***** Added argument *****
 }
 #endif
 
@@ -781,7 +784,7 @@ void ESP_WiFiManager::handleRoot()
   DEBUG_WM(F("Handle root"));
 
   // Disable _configPortalTimeout when someone accessing Portal to give some time to config
-  _configPortalTimeout = 0;		//KH 
+  _configPortalTimeout = 0; //KH
 
   if (captivePortal())
   {
@@ -826,7 +829,6 @@ void ESP_WiFiManager::handleRoot()
   page += FPSTR(HTTP_END);
 
   server->send(200, "text/html", page);
-
 }
 
 /** Wifi config page handler */
@@ -835,7 +837,7 @@ void ESP_WiFiManager::handleWifi()
   DEBUG_WM(F("Handle WiFi"));
 
   // Disable _configPortalTimeout when someone accessing Portal to give some time to config
-  _configPortalTimeout = 0;		//KH 
+  _configPortalTimeout = 0; //KH
 
   server->sendHeader("Cache-Control", "no-cache, no-store, must-revalidate");
   server->sendHeader("Pragma", "no-cache");
@@ -878,9 +880,9 @@ void ESP_WiFiManager::handleWifi()
 
 #ifdef ESP8266
       if (WiFi.encryptionType(networkIndices[i]) != ENC_TYPE_NONE)
-#else		//ESP32
+#else //ESP32
       if (WiFi.encryptionType(networkIndices[i]) != WIFI_AUTH_OPEN)
-#endif        
+#endif
       {
         item.replace("{i}", "l");
       }
@@ -975,7 +977,7 @@ void ESP_WiFiManager::handleWifi()
     item.replace("{l}", "15");
     item.replace("{v}", _sta_static_sn.toString());
 
-#if USE_CONFIGURABLE_DNS    
+#if USE_CONFIGURABLE_DNS
     //***** Added for DNS address options *****
     page += item;
 
@@ -994,7 +996,7 @@ void ESP_WiFiManager::handleWifi()
     item.replace("{p}", "DNS Address 2");
     item.replace("{l}", "15");
     item.replace("{v}", _sta_static_dns2.toString());
-    //***** End added for DNS address options *****    
+    //***** End added for DNS address options *****
 #endif
 
     page += item;
@@ -1100,7 +1102,7 @@ void ESP_WiFiManager::handleWifiSave()
 
   connect = true; //signal ready to connect/reset
 
-    // Restore when Press Save WiFi
+  // Restore when Press Save WiFi
   _configPortalTimeout = DEFAULT_PORTAL_TIMEOUT;
 }
 
@@ -1142,9 +1144,9 @@ void ESP_WiFiManager::handleInfo()
   DEBUG_WM(F("Info"));
 
   // Disable _configPortalTimeout when someone accessing Portal to give some time to config
-  _configPortalTimeout = 0;		//KH 
+  _configPortalTimeout = 0; //KH
 
-//DEBUG_WM(F("Info"));
+  //DEBUG_WM(F("Info"));
   server->sendHeader("Cache-Control", "no-cache, no-store, must-revalidate");
   server->sendHeader("Pragma", "no-cache");
   server->sendHeader("Expires", "-1");
@@ -1162,17 +1164,17 @@ void ESP_WiFiManager::handleInfo()
   page += F("<thead><tr><th>Name</th><th>Value</th></tr></thead><tbody><tr><td>Chip ID</td><td>");
 
 #ifdef ESP8266
-  page += String(ESP.getChipId(), HEX);		//ESP.getChipId();
-#else		//ESP32
-  page += String((uint32_t)ESP.getEfuseMac(), HEX);		//ESP.getChipId();
+  page += String(ESP.getChipId(), HEX); //ESP.getChipId();
+#else                                   //ESP32
+  page += String((uint32_t)ESP.getEfuseMac(), HEX); //ESP.getChipId();
 #endif
 
   page += F("</td></tr>");
   page += F("<tr><td>Flash Chip ID</td><td>");
 
 #ifdef ESP8266
-  page += String(ESP.getFlashChipId(), HEX);		//ESP.getFlashChipId();
-#else		//ESP32
+  page += String(ESP.getFlashChipId(), HEX); //ESP.getFlashChipId();
+#else                                        //ESP32
   // TODO
   page += F("TODO");
 #endif
@@ -1185,7 +1187,7 @@ void ESP_WiFiManager::handleInfo()
 
 #ifdef ESP8266
   page += ESP.getFlashChipRealSize();
-#else		//ESP32
+#else //ESP32
   // TODO
   page += F("TODO");
 #endif
@@ -1212,9 +1214,6 @@ void ESP_WiFiManager::handleInfo()
   page += F("</tbody></table>");
 
   page += FPSTR(HTTP_AVAILABLE_PAGES);
-
-  page += F("<p/>More information about ESP_WiFiManager at");
-  page += F("<p/><a href=\"https://github.com/khoih-prog/ESP_WiFiManager\">https://github.com/khoih-prog/ESP_WiFiManager</a>");
   page += FPSTR(HTTP_END);
 
   server->send(200, "text/html", page);
@@ -1261,7 +1260,7 @@ void ESP_WiFiManager::handleScan()
   DEBUG_WM(F("Scan"));
 
   // Disable _configPortalTimeout when someone accessing Portal to give some time to config
-  _configPortalTimeout = 0;		//KH 
+  _configPortalTimeout = 0; //KH
 
   DEBUG_WM(F("State - json"));
   server->sendHeader("Cache-Control", "no-cache, no-store, must-revalidate");
@@ -1303,9 +1302,9 @@ void ESP_WiFiManager::handleScan()
 
 #ifdef ESP8266
     if (WiFi.encryptionType(indices[i]) != ENC_TYPE_NONE)
-#else		//ESP32
+#else //ESP32
     if (WiFi.encryptionType(indices[i]) != WIFI_AUTH_OPEN)
-#endif 
+#endif
     {
       item.replace("{i}", "true");
     }
@@ -1356,7 +1355,7 @@ void ESP_WiFiManager::handleReset()
 
 #ifdef ESP8266
   ESP.reset();
-#else		//ESP32
+#else //ESP32
   ESP.restart();
 #endif
 
@@ -1403,26 +1402,27 @@ boolean ESP_WiFiManager::captivePortal()
     DEBUG_WM(F("Request redirected to captive portal"));
     server->sendHeader(F("Location"), (String)F("http://") + toStringIp(server->client().localIP()), true);
     server->send(302, FPSTR(HTTP_HEAD_CT2), ""); // Empty content inhibits Content-length header so we have to close the socket ourselves.
-    server->client().stop(); // Stop is needed because we sent no content length
+    server->client().stop();                     // Stop is needed because we sent no content length
     return true;
   }
   return false;
 }
 
 //start up config portal callback
-void ESP_WiFiManager::setAPCallback(void(*func)(ESP_WiFiManager* myWiFiManager))
+void ESP_WiFiManager::setAPCallback(void (*func)(ESP_WiFiManager *myWiFiManager))
 {
   _apcallback = func;
 }
 
 //start up save config callback
-void ESP_WiFiManager::setSaveConfigCallback(void(*func)(void))
+void ESP_WiFiManager::setSaveConfigCallback(void (*func)(void))
 {
   _savecallback = func;
 }
 
 //sets a custom element to add to head, like a new style tag
-void ESP_WiFiManager::setCustomHeadElement(const char* element) {
+void ESP_WiFiManager::setCustomHeadElement(const char *element)
+{
   _customHeadElement = element;
 }
 
@@ -1442,7 +1442,7 @@ int ESP_WiFiManager::scanWifiNetworks(int **indicesptr)
 
   int n = WiFi.scanNetworks();
 
-#if DEBUG_WIFIMGR    
+#if DEBUG_WIFIMGR
   Serial.printf("ESP_WiFiManager::scanWifiNetworks : Scan done, no scanned Networks = %d\n", n);
 #endif
 
@@ -1454,19 +1454,19 @@ int ESP_WiFiManager::scanWifiNetworks(int **indicesptr)
   if (n <= 0)
   {
     DEBUG_WM(F("No networks found"));
-    return(0);
+    return (0);
   }
   else
   {
     // Allocate space off the heap for indices array.
     // This space should be freed when no longer required.
-    int* indices = (int *)malloc(n * sizeof(int));
+    int *indices = (int *)malloc(n * sizeof(int));
 
     if (indices == NULL)
     {
       DEBUG_WM(F("ERROR: Out of memory"));
       *indicesptr = NULL;
-      return(0);
+      return (0);
     }
 
     *indicesptr = indices;
@@ -1537,7 +1537,7 @@ int ESP_WiFiManager::scanWifiNetworks(int **indicesptr)
       }
     }
 
-#if DEBUG_WIFIMGR		
+#if DEBUG_WIFIMGR
     for (int i = 0; i < n; i++)
     {
       if (indices[i] == -1)
@@ -1611,7 +1611,7 @@ String ESP_WiFiManager::toStringIp(IPAddress ip)
 }
 
 #ifdef ESP32
-// We can't use WiFi.SSID() in ESP32 as it's only valid after connected. 
+// We can't use WiFi.SSID() in ESP32 as it's only valid after connected.
 // SSID and Password stored in ESP32 wifi_ap_record_t and wifi_config_t are also cleared in reboot
 // Have to create a new function to store in EEPROM/SPIFFS for this purpose
 
@@ -1626,13 +1626,13 @@ String ESP_WiFiManager::getStoredWiFiSSID()
 
   if (!esp_wifi_sta_get_ap_info(&info))
   {
-    return String(reinterpret_cast<char*>(info.ssid));
+    return String(reinterpret_cast<char *>(info.ssid));
   }
   else
   {
     wifi_config_t conf;
     esp_wifi_get_config(WIFI_IF_STA, &conf);
-    return String(reinterpret_cast<char*>(conf.sta.ssid));
+    return String(reinterpret_cast<char *>(conf.sta.ssid));
   }
 
   return String();
@@ -1647,6 +1647,6 @@ String ESP_WiFiManager::getStoredWiFiPass()
 
   wifi_config_t conf;
   esp_wifi_get_config(WIFI_IF_STA, &conf);
-  return String(reinterpret_cast<char*>(conf.sta.password));
+  return String(reinterpret_cast<char *>(conf.sta.password));
 }
 #endif
