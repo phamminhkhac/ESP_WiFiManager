@@ -364,7 +364,9 @@ private:
 #endif
 
   template <typename Generic>
+#if DEBUG_WIFIMGR
   void DEBUG_WM(Generic text);
+#endif
 
   template <class T>
   auto optionalIPFromString(T *obj, const char *s) -> decltype(obj->fromString(s))
@@ -373,7 +375,9 @@ private:
   }
   auto optionalIPFromString(...) -> bool
   {
+#if DEBUG_WIFIMGR
     DEBUG_WM("NO fromString METHOD ON IPAddress, you need ESP8266 core 2.1.0 or newer for Custom IP configuration to work.");
+#endif
     return false;
   }
 };

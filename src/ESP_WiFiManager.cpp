@@ -1661,16 +1661,16 @@ int ESP_WiFiManager::scanWifiNetworks(int **indicesptr)
 }
 
 template <typename Generic>
+#if DEBUG_WIFIMGR
 void ESP_WiFiManager::DEBUG_WM(Generic text)
 {
   if (_debug)
   {
-#if DEBUG_WIFIMGR
     Serial.print("*WM: ");
     Serial.println(text);
-#endif
   }
 }
+#endif
 
 int ESP_WiFiManager::getRSSIasQuality(int RSSI)
 {
